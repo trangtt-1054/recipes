@@ -1,3 +1,11 @@
+const jwt = require('jsonwebtoken');
+
+const createToken = (user, secret, expiresIn) => {
+    const { username, email } = user;
+    //create that token
+    return jwt.sign({username, email}, secret, { expiresIn })
+}
+
 exports.resolvers = {
     Query: {
         getAllRecipes: async (root, args, { Recipe }) => {
@@ -23,6 +31,21 @@ exports.resolvers = {
             }).save();
             
             return newRecipe;
+        },
+
+        signupUser: async (root, {username, email, password}, { User }) => {
+            const user = await User.findOne({ username: username });
+            if (user) {
+                throw new Error('User already exists'); //nếu tìm thấy user đó trong database thì báo lỗi vì đã tồn tại rồi
+                
+            }
+            const newUser = await new User({
+                username,
+                email,
+                password
+            }).save(); //create a new user and save it to database
+            return { token: createToken(newUser, process.env.SECRET, '1hr')}
+            //vào variables.env, define 1 cái SECRET bất kỳ, random string, exprires in 1 hour
         }
     }
 
