@@ -3,8 +3,8 @@ const express = require('express');
 //mongoose is a package that connect our BE to mlab and creating SCHEMA. cái string ở trong require chính là tên package
 const mongoose = require('mongoose');
 
-
 const bodyParser = require('body-parser');//use for JSON responses
+const cors = require('cors'); //a package that allow cross domain request from React to BE
 
 require('dotenv').config({ path: 'variables.env' });
 const Recipe = require('./models/Recipe');
@@ -33,11 +33,17 @@ mongoose
 //initialize application
 const app = express();
 
-//Create GraphiQL application
-app.use('/graphiql', graphiqlExpress({ endpointURL: '/graphql' }));
+const corsOptions = {
+    origin: 'http://localhost:3000',
+    credentials: true //needed for apollo client to work correctly
+}
+
+app.use(cors(corsOptions));
 
 //another middleware fn, means adding the mongoose model to graphQL, connect schema with graphQL
-app.use('./graphql', graphqlExpress({
+
+//Lúc này là có thể vào localhost:4444 đc rồi, pass bodyParser vào đây như là middleware, chủ yếu là làm việc với json data nên thêm json()
+app.use('/graphql', bodyParser.json(), graphqlExpress({
     schema,
     context: {
         Recipe,
@@ -45,6 +51,8 @@ app.use('./graphql', graphqlExpress({
     }
 }));
 
+//Create GraphiQL application
+app.use('/graphiql', graphiqlExpress({ endpointURL: '/graphql' }));
 
 //set up server
 const PORT = process.env.PORT || 4444;
