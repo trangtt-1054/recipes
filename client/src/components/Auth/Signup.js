@@ -1,14 +1,22 @@
 import React from "react";
+import { withRouter } from 'react-router-dom';
 import { Mutation } from "react-apollo";
+import Error from '../Error';
 import { SIGNUP_USER } from '../../queries'
 
-class Signup extends React.Component {
-  state = {
+const initialState = {
     username: "",
     email: "",
     password: "",
     passwordConfirmation: ""
-  };
+}
+
+class Signup extends React.Component {
+  state = {...initialState};
+
+  clearState = () => {
+    this.setState({... initialState});
+  }
 
   handleChange = event => {
     const { name, value } = event.target;
@@ -19,10 +27,22 @@ class Signup extends React.Component {
 
   handleSubmit = (event, signupUser) => {
     event.preventDefault();
-    signupUser().then(data => {
+    signupUser().then(async ({data}) => {
         console.log(data); // có dạng {data:{}}
+        //sử dụng token đc trả về từ database để authenticate user
+        localStorage.setItem('token', data.signupUser.token);
+        await this.props.refetch(); //execute the query one more after signing up, perform before clearing the state
+        this.clearState();
+        this.props.history.push('/');
     })
     //vì signupUser trả về promise
+  }
+
+  validateForm = () => {
+      //trả về true or false
+      const { username, email, password, passwordConfirmation } = this.state;
+      const isInvalid = !username || !email || !password || password !== passwordConfirmation;
+      return isInvalid;
   }
 
   render() {
@@ -63,9 +83,14 @@ class Signup extends React.Component {
                   value={passwordConfirmation}
                   onChange={this.handleChange}
                 />
-                <button type="submit" className="button-primary">
+                <button 
+                    type="submit" 
+                    className="button-primary"
+                    disabled={ loading || this.validateForm() }
+                >
                   Submit
                 </button>
+                {error && <Error error={error}/>}
               </form>
             );
           }}
@@ -85,4 +110,4 @@ mutation={SIGNUP_USER} means which type of mutation we want to perform, SIGNUP_U
 Mutation còn access đc cả signupUser fn nữa => pass cái đấy vào luôn dùng cho onSubmit
 */
 
-export default Signup;
+export default withRouter(Signup);

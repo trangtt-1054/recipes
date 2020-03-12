@@ -1,4 +1,5 @@
 const jwt = require('jsonwebtoken');
+const bcrypt = require('bcrypt');
 
 const createToken = (user, secret, expiresIn) => {
     const { username, email } = user;
@@ -11,11 +12,24 @@ exports.resolvers = {
         getAllRecipes: async (root, args, { Recipe }) => {
             const allRecipes = await Recipe.find();
             return allRecipes;
-        }
+        },
         /* all the logic for executing this query, query này là lấy cả đống data về, chứ ko phải là recipe cụ thể nào cả => args 
 
         Query là để query data, Mutation: to do something with those data
         */
+       getCurrentUser: async (root, args, { currentUser, User }) => { //currentUser là đc destructure từ context ở graphqlExpress, User means User model
+            if(!currentUser) {
+                return null
+            }
+
+            const user = await User.findOne({ username: currentUser.username })
+                .populate({
+                    path: 'favorites',
+                    model: 'Recipe'
+                }); //trong User model có 1 cái field là favorites ref là Recipe. When we call populate() it will inject the entire Recipe model, were gonna get an array of recipes, not just the ids.
+            
+            return user; //Next: create withSession.js
+       }
 
     },
 
@@ -31,6 +45,21 @@ exports.resolvers = {
             }).save();
             
             return newRecipe;
+        },
+
+        signinUser: async (root, {username, password}, {User}) => {
+            const user = await User.findOne({username});
+            if (!user) {
+                throw new Error('User not found');
+            }
+
+            //compare password user type in with the password in database
+            const isValidPassword = await bcrypt.compare(password, user.password); 
+            if (!isValidPassword) {
+                throw new Error('Invalid password')
+            }
+            //nếu password đúng thì nhả token lần nữa
+            return { token: createToken(user, process.env.SECRET, '1hr')}
         },
 
         signupUser: async (root, {username, email, password}, { User }) => {
