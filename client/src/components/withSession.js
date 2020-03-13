@@ -8,10 +8,10 @@ const withSession = Component => props => (
     <Query query={GET_CURRENT_USER}>
         {({data, loading, refetch}) => {
             if (loading) return null;
-            console.log(data); //khi refresh page sẽ thấy getCurrentUser đc nhấc về từ token 
+            //console.log(data); //khi refresh page sẽ thấy getCurrentUser đc nhấc về từ token 
             return ( 
                 // 
-                <Component {...props} refetch={refetch}/>
+                <Component {...props} refetch={refetch} session={data}/>
             )
         }}
     </Query>

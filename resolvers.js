@@ -17,6 +17,11 @@ exports.resolvers = {
 
         Query là để query data, Mutation: to do something with those data
         */
+       getRecipe: async (root, {_id}, {Recipe}) => {
+            const recipe = await Recipe.findOne({ _id });
+            return recipe;
+       },
+
        getCurrentUser: async (root, args, { currentUser, User }) => { //currentUser là đc destructure từ context ở graphqlExpress, User means User model
             if(!currentUser) {
                 return null

@@ -43,7 +43,7 @@ app.use(cors(corsOptions));
 //Set up JWT authentication middleware
 app.use(async (req, res, next) => {
     //get token from request.headers.authorization
-    const token = req.headers['authorization'];
+    const token = req.headers['authorization']; 
     if(token !== "null") { //khi nào có token thì mới tiến hành authenticate, vì khi clear Storage rồi login lại thì token bằng null 
         try {
             const currentUser = await jwt.verify(token, process.env.SECRET); //phải pass lên cả secret nữa
