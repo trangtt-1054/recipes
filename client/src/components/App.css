@@ -2,3 +2,8 @@
   text-align: center;
 }
 
+form input {
+  display: block;
+  margin: 20px auto;
+}
+
