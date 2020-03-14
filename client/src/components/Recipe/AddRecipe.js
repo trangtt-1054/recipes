@@ -1,8 +1,9 @@
 import React from "react";
 import { Mutation } from "react-apollo";
-import { ADD_RECIPE, GET_ALL_RECIPES } from "../../queries";
+import { ADD_RECIPE, GET_ALL_RECIPES, GET_USER_RECIPES, GET_CURRENT_USER } from "../../queries";
 import Error from "../Error";
 import { withRouter } from 'react-router-dom';
+import withAuth from '../withAuth';
 
 class AddRecipe extends React.Component {
   state = {
@@ -79,6 +80,9 @@ class AddRecipe extends React.Component {
         mutation={ADD_RECIPE}
         variables={{ name, category, description, instructions, username }
 }
+        refetchQueries={() => [
+          { query: GET_USER_RECIPES, variables: { username }}
+        ]} //khi add mới thì profile chưa tự động úp đệt, GET_USER_RECIPE có variables là username nên khi fetch lại cũng phải thêm vô 
         update={this.updateCache}
       >
         {(addRecipe, { data, loading, error }) => {
@@ -139,4 +143,4 @@ class AddRecipe extends React.Component {
   }
 }
 
-export default withRouter(AddRecipe);
+export default withAuth(session => session && session.getCurrentUser)(withRouter(AddRecipe));

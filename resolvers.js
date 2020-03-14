@@ -38,6 +38,13 @@ exports.resolvers = {
             }
        },
 
+       getUserRecipes: async(root, {username}, {Recipe}) => {
+            const userRecipes = await Recipe.find({ username }).sort({
+                createdDate: 'desc'
+            })
+            return userRecipes;
+       },
+
        getCurrentUser: async (root, args, { currentUser, User }) => { //currentUser là đc destructure từ context ở graphqlExpress, User means User model
             if(!currentUser) {
                 return null
@@ -81,6 +88,11 @@ exports.resolvers = {
             }
             //nếu password đúng thì nhả token lần nữa
             return { token: createToken(user, process.env.SECRET, '1hr')}
+        },
+
+        deleteUserRecipe: async (root, {_id}, {Recipe}) => {
+            const recipe = await Recipe.findOneAndRemove({ _id });
+            return recipe;
         },
 
         signupUser: async (root, {username, email, password}, { User }) => {
