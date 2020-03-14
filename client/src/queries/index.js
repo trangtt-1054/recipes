@@ -4,12 +4,24 @@ import { gql } from "apollo-boost";
 export const GET_ALL_RECIPES = gql`
   query {
     getAllRecipes {
+      _id
       name
+      category
+      createdDate
+    }
+  }
+`;
+
+export const GET_RECIPE = gql`
+  query($_id: ID!) {
+    getRecipe(_id: $_id) {
+      _id
+      name
+      category
       description
       instructions
-      category
-      likes
       createdDate
+      likes
     }
   }
 `;
@@ -17,6 +29,22 @@ export const GET_ALL_RECIPES = gql`
 /* tên query phải chính xác như trong Schema */
 
 /* Recipes Mutation */
+
+//đống arg pass vào copy từ schema sang rồi add $
+
+export const ADD_RECIPE = gql`
+  mutation($name: String!, $description: String!, $category: String!, $instructions: String!, $username: String) {
+        addRecipe(name: $name, description: $description, category: $category, instructions: $instructions, username: $username) {
+          _id
+          name
+          category
+          instructions
+          createdDate
+          likes  
+    }
+  }
+`;
+
 
 /* User Queries */
 export const GET_CURRENT_USER = gql`
@@ -26,10 +54,9 @@ export const GET_CURRENT_USER = gql`
       joinDate
       email
     }
-  } 
+  }
 `;
 //sau khi xong ở đây có thể quay về withSession.js để add query props, query={GET_CURRENT_USER}
-
 
 /* User Mutation */
 export const SIGNIN_USER = gql`
