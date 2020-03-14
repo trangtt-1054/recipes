@@ -28,6 +28,16 @@ export const GET_RECIPE = gql`
 
 /* tên query phải chính xác như trong Schema */
 
+export const SEARCH_RECIPES = gql`
+    query($searchTerm: String) {
+      searchRecipes(searchTerm: $searchTerm) {
+        _id
+        name
+        likes
+      }
+    }
+`;
+
 /* Recipes Mutation */
 
 //đống arg pass vào copy từ schema sang rồi add $

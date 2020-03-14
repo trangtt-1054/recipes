@@ -22,6 +22,22 @@ exports.resolvers = {
             return recipe;
        },
 
+       searchRecipes: async (root, { searchTerm }, { Recipe }) => {
+            if(searchTerm) {
+                const searchResults = await Recipe.find({
+                    $text: { $search: searchTerm } //find a recipe according to text search
+                }, { //pass in another object to find fn
+                    score: { $meta: "textScore" } //adding a new meta field on the recipe that we get back, kiểu như để tìm cái nào gần sát nhất với searchTerm
+                }).sort({
+                    score: { $meta: "textScore" }
+                });
+                return searchResults;
+            } else {
+                const recipes = await Recipe.find().sort({ likes: 'desc', createdDate: 'desc' });
+                return recipes;
+            }
+       },
+
        getCurrentUser: async (root, args, { currentUser, User }) => { //currentUser là đc destructure từ context ở graphqlExpress, User means User model
             if(!currentUser) {
                 return null
