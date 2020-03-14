@@ -33,5 +33,9 @@ const RecipeSchema = new Schema({
     }
 })
 
+RecipeSchema.index({
+    '$**': 'text' //search for a value on every field within the recipe
+})
+
 module.exports = mongoose.model('Recipe', RecipeSchema); 
 //(name of the schema, schema variable)

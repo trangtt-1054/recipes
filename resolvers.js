@@ -22,6 +22,29 @@ exports.resolvers = {
             return recipe;
        },
 
+       searchRecipes: async (root, { searchTerm }, { Recipe }) => {
+            if(searchTerm) {
+                const searchResults = await Recipe.find({
+                    $text: { $search: searchTerm } //find a recipe according to text search
+                }, { //pass in another object to find fn
+                    score: { $meta: "textScore" } //adding a new meta field on the recipe that we get back, kiểu như để tìm cái nào gần sát nhất với searchTerm
+                }).sort({
+                    score: { $meta: "textScore" }
+                });
+                return searchResults;
+            } else {
+                const recipes = await Recipe.find().sort({ likes: 'desc', createdDate: 'desc' });
+                return recipes;
+            }
+       },
+
+       getUserRecipes: async(root, {username}, {Recipe}) => {
+            const userRecipes = await Recipe.find({ username }).sort({
+                createdDate: 'desc'
+            })
+            return userRecipes;
+       },
+
        getCurrentUser: async (root, args, { currentUser, User }) => { //currentUser là đc destructure từ context ở graphqlExpress, User means User model
             if(!currentUser) {
                 return null
@@ -65,6 +88,11 @@ exports.resolvers = {
             }
             //nếu password đúng thì nhả token lần nữa
             return { token: createToken(user, process.env.SECRET, '1hr')}
+        },
+
+        deleteUserRecipe: async (root, {_id}, {Recipe}) => {
+            const recipe = await Recipe.findOneAndRemove({ _id });
+            return recipe;
         },
 
         signupUser: async (root, {username, email, password}, { User }) => {
