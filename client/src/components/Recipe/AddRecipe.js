@@ -2,6 +2,7 @@ import React from "react";
 import { Mutation } from "react-apollo";
 import { ADD_RECIPE } from "../../queries";
 import Error from "../Error";
+import { withRouter } from 'react-router-dom';
 
 class AddRecipe extends React.Component {
   state = {
@@ -13,7 +14,7 @@ class AddRecipe extends React.Component {
   };
 
   componentDidMount() {
-    console.log(this.props); //{session: {}}
+    //console.log(this.props); //{session: {}}
     this.setState({
       username: this.props.session.getCurrentUser.username
     });
@@ -21,7 +22,7 @@ class AddRecipe extends React.Component {
 
   handleChange = event => {
     const { name, value } = event.target;
-    console.log(name, ":", value);
+    //console.log(name, ":", value);
     this.setState({
       [name]: value
     });
@@ -37,9 +38,13 @@ class AddRecipe extends React.Component {
 
   handleSubmit = (event, addRecipe) => {
     event.preventDefault();
-    addRecipe().then(({ data }) => {
-      console.log(data); //{addRecipe:{}}
+    addRecipe().then(async ({ data }) => {
+       //{addRecipe:{}}
+      await this.props.refetch();
+      this.props.history.push('/');
     });
+    // this.props.history.push('/');
+    
   };
 
   render() {
@@ -106,4 +111,4 @@ class AddRecipe extends React.Component {
   }
 }
 
-export default AddRecipe;
+export default withRouter(AddRecipe);

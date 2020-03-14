@@ -10,7 +10,7 @@ const createToken = (user, secret, expiresIn) => {
 exports.resolvers = {
     Query: {
         getAllRecipes: async (root, args, { Recipe }) => {
-            const allRecipes = await Recipe.find();
+            const allRecipes = await Recipe.find().sort({ createdDate: 'desc' });
             return allRecipes;
         },
         /* all the logic for executing this query, query này là lấy cả đống data về, chứ ko phải là recipe cụ thể nào cả => args 
