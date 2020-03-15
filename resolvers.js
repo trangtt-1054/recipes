@@ -63,9 +63,10 @@ exports.resolvers = {
 
     //When we want to change database    
     Mutation: {
-        addRecipe: async (root, { name, description, category, instructions, username }, { Recipe }) => {
-            const newRecipe = await new Recipe({
+        addRecipe: async (root, { name, imageUrl, description, category, instructions, username }, { Recipe }) => {
+            const newRecipe = await new Recipe({ //constructor fn
                 name,
+                imageUrl,
                 description,
                 category,
                 instructions,
@@ -74,6 +75,21 @@ exports.resolvers = {
             
             return newRecipe;
         },
+
+        likeRecipe: async (root, {_id, username}, {Recipe, User}) => {
+            const recipe = await Recipe.findOneAndUpdate({ _id }, { $inc: { likes: 1 }});
+            const user = await User.findOneAndUpdate({ username }, { $addToSet : { favorites: _id }});
+            return recipe; //ko cần return user
+        },
+
+        unlikeRecipe: async (root, {_id, username}, {Recipe, User}) => {
+            const recipe = await Recipe.findOneAndUpdate({ _id }, { $inc: { likes: -1 }});
+            const user = await User.findOneAndUpdate({ username }, { $pull : { favorites: _id }});
+            return recipe; //ko cần return user
+        },
+        //{ $inc: { likes: 1 }} increment the "likes" field by one
+        //{ $addToSet : { favorites: _id }} add the id to the favorite array
+        //$pull: remove a given id
 
         signinUser: async (root, {username, password}, {User}) => {
             const user = await User.findOne({username});
