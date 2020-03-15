@@ -63,9 +63,10 @@ exports.resolvers = {
 
     //When we want to change database    
     Mutation: {
-        addRecipe: async (root, { name, description, category, instructions, username }, { Recipe }) => {
-            const newRecipe = await new Recipe({
+        addRecipe: async (root, { name, imageUrl, description, category, instructions, username }, { Recipe }) => {
+            const newRecipe = await new Recipe({ //constructor fn
                 name,
+                imageUrl,
                 description,
                 category,
                 instructions,
