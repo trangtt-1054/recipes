@@ -17,7 +17,7 @@ import RecipePage from './components/Recipe/RecipePage';
 // 1. /graphiql - for debugging console
 // 2. /graphql - real API
 const client = new ApolloClient({
-    uri: 'http://localhost:4444/graphql', //connect FE to BE
+    uri: 'http://react-trang-apollo-recipes.herokuapp.com/graphql', //connect FE to BE
     fetchOptions: {
         credentials: 'include' //allow to send our token to BE
     },

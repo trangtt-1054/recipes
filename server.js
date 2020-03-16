@@ -3,6 +3,7 @@ const express = require('express');
 //mongoose is a package that connect our BE to mlab and creating SCHEMA. cái string ở trong require chính là tên package
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');//use for JSON responses
+const path = require('path');
 const cors = require('cors'); //a package that allow cross domain request from React to BE
 const jwt = require('jsonwebtoken');
 require('dotenv').config({ path: 'variables.env' });
@@ -70,7 +71,15 @@ app.use('/graphql', bodyParser.json(), graphqlExpress(({ currentUser }) => ({
 })));
 
 //Create GraphiQL application
-app.use('/graphiql', graphiqlExpress({ endpointURL: '/graphql' }));
+//app.use('/graphiql', graphiqlExpress({ endpointURL: '/graphql' }));
+
+if (process.env.NODE_ENV === 'production') {
+    //add a middle ware fn
+    app.use(express.static('client/build'));
+    app.get('*', (req,res) => {
+        res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
+    })
+}
 
 //set up server
 const PORT = process.env.PORT || 4444;
