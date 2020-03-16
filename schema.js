@@ -38,7 +38,10 @@ type Mutation {
     deleteUserRecipe(_id: ID!): Recipe
 
     likeRecipe(_id: ID!, username: String!): Recipe
+
     unlikeRecipe(_id: ID!, username: String!): Recipe
+
+    updateUserRecipe(_id: ID!, name: String!, imageUrl: String!, description: String!, category: String!): Recipe
 
     signupUser(username: String!, email: String!, password: String!): Token
 
