@@ -91,6 +91,16 @@ exports.resolvers = {
         //{ $addToSet : { favorites: _id }} add the id to the favorite array
         //$pull: remove a given id
 
+        updateUserRecipe: async (root, {_id, name, imageUrl, category, description}, {Recipe}) => {
+            const updatedRecipe = await Recipe.findOneAndUpdate(
+                { _id }, //search by the _id
+                { $set: {name, imageUrl, category, description }}, //set new value
+                { new: true } //return fresh data
+                //3 cái {} trong findOneAndUpdate này gọi là filter
+            )
+            return updatedRecipe;
+        },
+
         signinUser: async (root, {username, password}, {User}) => {
             const user = await User.findOne({username});
             if (!user) {
